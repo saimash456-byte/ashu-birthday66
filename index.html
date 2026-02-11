@@ -1,216 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Day 6 - Emergency Love Case</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>6 Days Left - Diagnostic Upgrade</title>
+    <style>
+        :root { --blue: #00b4d8; --neon: #00ff41; --red: #ff4d6d; --pink: #ff85a1; --glass: rgba(255, 255, 255, 0.05); }
+        body, html { margin:0; padding:0; overflow:hidden; font-family:'Segoe UI', sans-serif; background: radial-gradient(circle, #001219 0%, #000 100%); color: #fff; }
+        
+        .stage { display:none; width:100vw; height:100vh; justify-content:center; align-items:center; flex-direction:column; text-align:center; position:absolute; padding: 25px; box-sizing: border-box; }
+        .active { display:flex; animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-<style>
-body{
-  margin:0;
-  background:black;
-  color:white;
-  font-family:'Segoe UI',sans-serif;
-  text-align:center;
-  overflow:hidden;
-}
+        /* Advanced Scanning Frame */
+        .scan-frame { width: 230px; height: 230px; border: 2px solid var(--blue); border-radius: 20px; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; background: var(--glass); backdrop-filter: blur(10px); box-shadow: 0 0 25px rgba(0, 180, 216, 0.3); }
+        .laser { width: 100%; height: 3px; background: var(--neon); position: absolute; top: 0; animation: scanLine 2s infinite linear; box-shadow: 0 0 15px var(--neon); }
+        
+        @keyframes scanLine { 0% { top: 0%; } 100% { top: 100%; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-/* SCREENS */
-.screen{
-  padding:40px;
-  display:none;
-}
-.active{
-  display:block;
-}
+        .pulse-text { color: var(--neon); font-size: 0.9rem; margin-top: 15px; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+        .btn { background: linear-gradient(45deg, var(--blue), #0077b6); color: white; border: none; padding: 16px 35px; border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; max-width: 280px; margin-top: 30px; box-shadow: 0 5px 15px rgba(0, 180, 216, 0.4); text-transform: uppercase; letter-spacing: 1px; }
 
-/* BUTTON */
-button{
-  padding:12px 25px;
-  font-size:16px;
-  border:none;
-  border-radius:30px;
-  background:pink;
-  cursor:pointer;
-  margin-top:20px;
-}
+        .report-box { background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 15px; text-align: left; width: 95%; max-width: 350px; line-height: 1.6; position: relative; }
+        .report-box::before { content: "REPORT #06"; position: absolute; top: -10px; right: 15px; background: var(--blue); font-size: 0.6rem; padding: 2px 8px; border-radius: 5px; }
 
-/* ECG */
-.ecg-container{
-  width:100%;
-  height:120px;
-  margin-top:20px;
-}
-svg{
-  width:100%;
-  height:100%;
-}
-.ecg-path{
-  stroke:lime;
-  stroke-width:3;
-  fill:none;
-  stroke-dasharray:1000;
-  stroke-dashoffset:1000;
-  animation:draw 3s linear infinite;
-}
-@keyframes draw{
-  to{ stroke-dashoffset:0; }
-}
-
-/* TYPEWRITER */
-.typewriter{
-  overflow:hidden;
-  white-space:nowrap;
-  border-right:3px solid pink;
-  animation:typing 4s steps(40,end), blink .8s infinite;
-}
-@keyframes typing{
-  from{ width:0 }
-  to{ width:100% }
-}
-@keyframes blink{
-  50%{ border-color:transparent }
-}
-
-/* FLOATING HEARTS */
-.heart{
-  position:absolute;
-  color:pink;
-  animation:fall 5s linear infinite;
-}
-@keyframes fall{
-  from{ top:-10%; }
-  to{ top:110%; }
-}
-
-/* POPUP */
-.popup{
-  position:fixed;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  background:#111;
-  padding:30px;
-  border:2px solid pink;
-  border-radius:15px;
-  display:none;
-}
-.popup button{
-  margin:10px;
-}
-</style>
+        .final-wish { font-size: 0.95rem; color: #eee; font-style: italic; border-left: 3px solid var(--pink); padding-left: 15px; margin: 15px 0; }
+    </style>
 </head>
-
 <body>
 
-<!-- BACKGROUND MUSIC -->
-<audio autoplay loop>
-  <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg">
-</audio>
+    <div id="slide1" class="stage active">
+        <h3 style="color: var(--blue); letter-spacing: 3px;">SENSORS ACTIVE: HEART</h3>
+        <div class="scan-frame" onclick="checkHeart()">
+            <div class="laser"></div>
+            <div id="heartIcon" style="font-size: 90px; filter: drop-shadow(0 0 15px var(--red));">❤️</div>
+        </div>
+        <p id="heartStatus" style="opacity: 0.7;">Touch Heart to Listen...</p>
+        <div id="heartResult" style="display:none;" class="pulse-text">MATCH FOUND: ASHU... ASHU... ❤️</div>
+        <button id="btn1" class="btn" style="display:none;" onclick="nextSlide(1, 2)">Proceed to Neuro Scan</button>
+    </div>
 
-<!-- SCENE 1 -->
-<div class="screen active" id="scene1">
-  <h2>⚠️ Emergency Alert</h2>
-  <p>Patient Name: Saim</p>
-  <p>Condition: Critical</p>
-  <p>Cause: Ashu Overdose</p>
+    <div id="slide2" class="stage">
+        <h3 style="color: var(--blue); letter-spacing: 3px;">SYSTEM ANALYSIS: BRAIN</h3>
+        <div class="scan-frame" onclick="checkBrain()">
+            <div class="laser"></div>
+            <div id="brainIcon" style="font-size: 80px;">🧠</div>
+        </div>
+        <p id="brainStatus" style="opacity: 0.7;">Mapping Neural Pathways...</p>
+        <div id="brainResult" style="display:none;" class="pulse-text">DETECTED: ASHU HI ASHU HAI 😊<br>STATUS: 100% CAPTURED</div>
+        <button id="btn2" class="btn" style="display:none;" onclick="nextSlide(2, 3)">Check Final Verdict</button>
+    </div>
 
-  <div class="ecg-container">
-    <svg viewBox="0 0 500 100">
-      <path class="ecg-path"
-        d="M0 50 L50 50 L70 20 L90 80 L110 40 L130 50 L180 50
-           L200 20 L220 80 L240 40 L260 50 L310 50
-           L330 20 L350 80 L370 40 L390 50 L500 50"/>
-    </svg>
-  </div>
+    <div id="slide3" class="stage">
+        <h3 style="color: var(--pink); letter-spacing: 2px;">SENSORY VERDICT</h3>
+        <div style="font-size: 60px; margin-bottom: 20px; filter: drop-shadow(0 0 10px var(--pink));">🧬</div>
+        <div class="report-box" style="text-align: center;">
+            <p style="font-size: 1.1rem; margin: 0;">
+                Diagnosis Complete:<br><br>
+                Saim ke Dil o Dimag mein bas yahi hai...<br><br>
+                <b style="color: var(--pink); font-size: 1.6rem; text-shadow: 0 0 10px var(--pink);">Ashu, Ashu aur sirf Ashu!</b>
+            </p>
+        </div>
+        <button class="btn" onclick="nextSlide(3, 4)">View Advance Birthday Wishes</button>
+    </div>
 
-  <button onclick="next('scene1','scene2')">
-    👩‍⚕️ Doctor, Check Report
-  </button>
-</div>
+    <div id="slide4" class="stage">
+        <div style="background: var(--glass); padding: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 30px rgba(255,255,255,0.1);">
+            <h1 style="font-size: 5rem; color: var(--blue); margin: 0; line-height: 1;">06</h1>
+            <p style="letter-spacing: 5px; margin: 0; font-weight: bold; font-size: 0.8rem;">DAYS TO GO</p>
+        </div>
+        
+        <div class="report-box" style="margin-top: 30px;">
+            <b style="color: var(--pink);">Advance Birthday Log:</b>
+            <div class="final-wish">
+                "Meri pyari Dr. Ashu, aapka janam din 6 din baad hai magar ye dil aaj hi se jashn mana raha hai. Aap sirf mera sukoon nahi, meri poori kainat hain. Saim ki report ka nichorh bas yehi hai ke main poora ka poora sirf aapka hoon aur hamesha rahoonga. Happy Birthday in Advance to my heartbeat!"
+            </div>
+        </div>
 
-<!-- SCENE 2 HEART + BRAIN -->
-<div class="screen" id="scene2">
-  <h2>👩‍⚕️ Dr. Ashu - Pharm D</h2>
+        <h2 style="color: var(--pink); margin-top: 20px; text-shadow: 0 0 10px var(--pink);">Mera Ras Malai ❤️</h2>
+        <p style="font-size: 0.8rem; opacity: 0.5; letter-spacing: 2px;">I LOVE YOU MERI KUL KAINAT</p>
+        
+        <button class="btn" style="background: var(--red); box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4);" onclick="location.reload()">Reset System Check</button>
+    </div>
 
-  <h3>❤️ HEART REPORT</h3>
-  <p class="typewriter">Heart Rhythm: Ashu... Ashu... Ashu...</p>
-  <p>Every Beat Registered Under: ASHU</p>
+    <audio id="beepSound"><source src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" type="audio/mpeg"></audio>
 
-  <h3>🧠 BRAIN MRI</h3>
-  <p>Memory 1: Ashu</p>
-  <p>Memory 2: Ashu</p>
-  <p>All Thoughts Occupied By: Ashu</p>
+    <script>
+        function nextSlide(c, n) {
+            document.getElementById('slide' + c).classList.remove('active');
+            document.getElementById('slide' + n).classList.add('active');
+        }
 
-  <button onclick="next('scene2','scene3')">
-    🔬 Doctor Recommendation
-  </button>
-</div>
+        function playBeep() {
+            let s = document.getElementById('beepSound');
+            s.currentTime = 0; s.play();
+        }
 
-<!-- SCENE 3 RECOMMENDATION -->
-<div class="screen" id="scene3">
-  <h2>👩‍⚕️ Doctor’s Recommendation</h2>
-  <p>💗 Daily Care Dose</p>
-  <p>💞 Unlimited Love Therapy</p>
-  <p>💍 Permanent Emotional Attachment</p>
+        function checkHeart() {
+            playBeep();
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            document.getElementById('heartStatus').style.display = 'none';
+            document.getElementById('heartResult').style.display = 'block';
+            document.getElementById('btn1').style.display = 'block';
+        }
 
-  <button onclick="next('scene3','scene4');startHearts();">
-    🧾 Final Verdict
-  </button>
-</div>
-
-<!-- SCENE 4 FINAL -->
-<div class="screen" id="scene4">
-  <h2>🧾 Final Medical Verdict</h2>
-  <p>Patient Stable Only With Doctor</p>
-  <p>Emotional Dependency: Permanent</p>
-
-  <h3 style="color:pink;">
-    “Case file will be permanently closed…<br>
-    only if Doctor becomes Life Partner.” 😌
-  </h3>
-
-  <button onclick="showPopup()">💍 Approve Treatment</button>
-</div>
-
-<!-- POPUP -->
-<div class="popup" id="popup">
-  <h3>Do You Accept Lifetime Treatment?</h3>
-  <button onclick="accepted()">Yes ❤️</button>
-  <button onclick="declined()">No 😢</button>
-</div>
-
-<script>
-function next(current,next){
-  document.getElementById(current).classList.remove("active");
-  document.getElementById(next).classList.add("active");
-}
-
-function startHearts(){
-  setInterval(function(){
-    var heart=document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML="❤️";
-    heart.style.left=Math.random()*100+"vw";
-    heart.style.fontSize=(Math.random()*20+15)+"px";
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),5000);
-  },300);
-}
-
-function showPopup(){
-  document.getElementById("popup").style.display="block";
-}
-
-function accepted(){
-  document.getElementById("popup").innerHTML=
-  "<h2 style='color:pink;'>Treatment Approved ❤️</h2><p>Patient Saved Forever 💍</p>";
-}
-
-function declined(){
-  document.getElementById("popup").innerHTML=
-  "<h2>System Error 😢</h2><p>Patient Cannot Survive Without Doctor</p>";
-}
-</script>
-
+        function checkBrain() {
+            playBeep();
+            if (navigator.vibrate) navigator.vibrate(200);
+            document.getElementById('brainStatus').style.display = 'none';
+            document.getElementById('brainResult').style.display = 'block';
+            document.getElementById('btn2').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
